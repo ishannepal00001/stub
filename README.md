@@ -16,6 +16,49 @@ A tiny personal-learning CLI. Give it a language and it writes a dated code stub
 
 and adds a symlink in your configured Obsidian vault folder pointing at the `.md` file. The Markdown note records the date, time and your message; the code file carries the same information as comments.
 
+## Running as a CLI tool
+
+### From the project directory (recommended)
+
+```bash
+cd /home/ishannepal/Projects/stub
+uv sync
+uv run stub --help
+uv run stub generate template cpp -l -s -m "Extra message"
+```
+
+`uv run stub` uses the `[project.scripts]` entry in `pyproject.toml`, so no global install is needed. `uv run python -m stub` works too.
+
+```bash
+uv run stub config --vault /path/to/ObsidianVault/Learnings
+uv run stub config --learnings /home/ishannepal/Learnings
+uv run stub generate template cpp -n myname
+uv run python -m unittest discover -s tests
+```
+
+### As a plain `stub` command from anywhere
+
+```bash
+uv tool install /home/ishannepal/Projects/stub
+stub --help
+stub generate template cpp -l -s -m "Extra message"
+```
+
+After changing the code, reinstall with:
+
+```bash
+cd /home/ishannepal/Projects/stub && uv tool install --reinstall .
+```
+
+Or activate the existing virtual environment manually:
+
+```bash
+source /home/ishannepal/Projects/stub/.venv/bin/activate
+stub --help
+```
+
+Paths live in `config.toml` and the TOML recipes live in `.templates/`.
+
 ## Commands
 
 ```
