@@ -59,7 +59,7 @@ It also handles `stub template cpp --ext cpp` when you want to create a new reci
 
 ### `models.py` — the labelled boxes
 
-Small data containers (`dataclasses`) that carry values between modules so no module has to guess another's format.
+Small frozen pydantic models that carry values between modules so no module has to guess another's format.
 
 ```python
 RenderContext(
@@ -165,7 +165,7 @@ Each module also has a matching test file under `tests/`, so a change can be che
 | `src/stub/cli.py` | Argument parsing and orchestration |
 | `src/stub/config.py` | Read/write `config.toml` |
 | `src/stub/templates.py` | Find, load, validate and scaffold templates |
-| `src/stub/models.py` | Shared dataclasses |
+| `src/stub/models.py` | Shared frozen pydantic models |
 | `src/stub/render.py` | Placeholder substitution and message formatting |
 | `src/stub/writer.py` | File creation and symlink management |
 | `.templates/*.toml` | Output recipes |

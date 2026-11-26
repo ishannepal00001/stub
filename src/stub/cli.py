@@ -117,7 +117,7 @@ def cmd_generate_template(args: argparse.Namespace) -> GenerationResult:
         print(f"created {path}")
     for path in symlinks:
         print(f"linked {path} -> {path.resolve()}")
-    return GenerationResult(tuple(files), tuple(symlinks))
+    return GenerationResult(files=tuple(files), symlinks=tuple(symlinks))
 
 
 def cmd_config(args: argparse.Namespace) -> None:

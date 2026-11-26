@@ -1,33 +1,43 @@
-"""Small data containers shared by stub's modules."""
+"""Pydantic models shared by stub's modules."""
 
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class StubError(Exception):
     """An error meant for the user, without a traceback."""
 
 
-@dataclass(frozen=True)
-class Paths:
+class FrozenModel(BaseModel):
+    """Base for models that should never change after creation."""
+
+    model_config = ConfigDict(frozen=True)
+
+
+class Paths(FrozenModel):
     """The two directories stub cares about."""
 
     learnings: Path
     vault: Path | None = None
 
 
-@dataclass(frozen=True)
-class TemplateSpec:
+class TemplateSpec(FrozenModel):
     """One parsed .toml recipe from .templates/."""
 
     name: str
     extension: str
     body: str
     filename: str = "{date}_{language}"
+
+    @field_validator("extension", mode="before")
+    @classmethod
+    def strip_leading_dot(cls, value: str) -> str:
+        return value.lstrip(".") if isinstance(value, str) else value
 
     @classmethod
     def from_mapping(cls, data: dict, source: Path | None = None) -> TemplateSpec:
@@ -42,14 +52,13 @@ class TemplateSpec:
             raise StubError(f"template{origin} has a non-string filename pattern")
         return cls(
             name=data["name"],
-            extension=data["extension"].lstrip("."),
+            extension=data["extension"],
             body=data["body"],
             filename=filename,
         )
 
 
-@dataclass(frozen=True)
-class RenderContext:
+class RenderContext(FrozenModel):
     """Everything render.py needs to fill in a template."""
 
     date: str
@@ -97,12 +106,11 @@ class RenderContext:
         }
 
 
-@dataclass(frozen=True)
-class GenerationResult:
+class GenerationResult(FrozenModel):
     """What a generate run produced, for printing and for tests."""
 
-    files: tuple[Path, ...] = ()
-    symlinks: tuple[Path, ...] = ()
+    files: tuple[Path, ...] = Field(default_factory=tuple)
+    symlinks: tuple[Path, ...] = Field(default_factory=tuple)
 
 
 def safe_stem(name: str) -> str:

@@ -183,15 +183,15 @@ See [docs/architecture.md](docs/architecture.md) for what each module does, with
 
 ## Design notes
 
-- Python 3.11+ (uses `tomllib`); no third-party runtime dependencies.
+- Python 3.11+ (uses `tomllib`). Dependencies are managed with `uv` and pinned in `uv.lock`.
+- `models.py` uses frozen **pydantic v2** models (`Paths`, `TemplateSpec`, `RenderContext`, `GenerationResult`); everything else stays stdlib-only.
 - `pathlib` writes files exclusively (`open("x", encoding="utf-8")`), so existing work is never clobbered.
 - Tests use the standard library `unittest`.
 
 ## Development
 
-Once implemented:
-
 ```
-pip install -e .
-python -m unittest discover -s tests
+uv sync
+uv run stub --help
+uv run python -m unittest discover -s tests
 ```

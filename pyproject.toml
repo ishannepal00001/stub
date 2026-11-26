@@ -7,7 +7,9 @@ name = "stub"
 version = "0.1.0"
 description = "A tiny CLI for creating dated learning notes and code stubs"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "pydantic>=2.14.4",
+]
 
 [project.scripts]
 stub = "stub.cli:main"
