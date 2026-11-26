@@ -195,5 +195,3 @@ Once implemented:
 pip install -e .
 python -m unittest discover -s tests
 ```
-# stub
-# stub
