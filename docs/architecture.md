@@ -39,7 +39,7 @@ It also enforces the rules: `-s` needs `-l`; without `-l`, `-n NAME` is required
 
 ### `config.py` — the address book
 
-Only knows paths. It reads `config.toml` and changes one key when you run `stub config`.
+Only knows paths. It reads `~/.config/stub/config.toml` for an installed tool (or the project's `config.toml` in a source checkout) and changes one key when you run `stub config`.
 
 ```
 stub config --vault /home/ishannepal/Documents/Obsidian/Learnings
@@ -49,10 +49,10 @@ changes only the `vault` line and leaves `learnings` alone.
 
 ### `templates.py` — the recipe drawer
 
-Given a language name, it finds the matching recipe in `.templates/` and returns its extension and body text. It never fills in the recipe.
+Given a language name, it finds the matching recipe in the active template directory and returns its extension and body text. It never fills in the recipe. Bundled defaults are copied into `~/.config/stub/templates/` (or the source checkout's `.templates/`) on first use, without overwriting your edits.
 
 ```
-cpp → .templates/cpp.toml → extension = "cpp", body = '''...'''
+cpp → ~/.config/stub/templates/cpp.toml → extension = "cpp", body = '''...'''
 ```
 
 It also handles `stub template cpp --ext cpp` when you want to create a new recipe.
@@ -84,7 +84,7 @@ It uses `string.Template.safe_substitute()`, so the `{` in `int main() {` is lef
 
 ### `writer.py` — the hands
 
-Creates folders and files for real. Uses exclusive creation so an existing file is never silently overwritten, then adds the Obsidian symlink if asked.
+Creates folders and files for real through `write_generation()`, which takes `Paths` and already-rendered text and returns a `GenerationResult`. Uses exclusive creation so an existing file is never silently overwritten, then adds the Obsidian symlink if asked.
 
 ```
 /home/ishannepal/Learnings/2026-11-26_cpp.cpp    ← new file
@@ -149,8 +149,8 @@ The first four steps are the same, except:
 
 | Change you want to make | File you touch |
 | --- | --- |
-| Different comment text in generated C++ | `.templates/cpp.toml` |
-| Move the learnings or vault folder | `config.toml` |
+| Different comment text in generated C++ | active `cpp.toml` (bundled default in `src/stub/data/templates/`) |
+| Move the learnings or vault folder | active config file (`~/.config/stub/config.toml` or project `config.toml`) |
 | Copy files instead of symlinking | `src/stub/writer.py` |
 | Add a new flag | `src/stub/cli.py` |
 | Add a new placeholder | `src/stub/render.py` |
@@ -163,10 +163,11 @@ Each module also has a matching test file under `tests/`, so a change can be che
 | --- | --- |
 | `src/stub/__main__.py` | Allows `python -m stub` |
 | `src/stub/cli.py` | Argument parsing and orchestration |
-| `src/stub/config.py` | Read/write `config.toml` |
-| `src/stub/templates.py` | Find, load, validate and scaffold templates |
+| `src/stub/config.py` | Read/write the active config file |
+| `src/stub/templates.py` | Seed, find, load, validate and scaffold templates |
 | `src/stub/models.py` | Shared frozen pydantic models |
 | `src/stub/render.py` | Placeholder substitution and message formatting |
 | `src/stub/writer.py` | File creation and symlink management |
-| `.templates/*.toml` | Output recipes |
-| `config.toml` | Paths |
+| `src/stub/data/templates/*.toml` | Bundled default recipes |
+| `~/.config/stub/templates/` (or project `.templates/`) | Active templates |
+| `~/.config/stub/config.toml` (or project `config.toml`) | Paths |

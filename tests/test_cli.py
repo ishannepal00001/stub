@@ -7,7 +7,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from stub.cli import main
-from stub.templates import DEFAULT_TEMPLATES_DIR
+from stub.templates import BUNDLED_TEMPLATES
 
 
 class CliTests(unittest.TestCase):
@@ -25,7 +25,7 @@ class CliTests(unittest.TestCase):
             os.environ,
             {
                 "STUB_CONFIG": str(self.config),
-                "STUB_TEMPLATES_DIR": str(DEFAULT_TEMPLATES_DIR),
+                "STUB_TEMPLATES_DIR": str(BUNDLED_TEMPLATES),
             },
         )
         env.start()

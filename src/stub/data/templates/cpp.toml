@@ -1,0 +1,15 @@
+name = "cpp"
+extension = "cpp"
+filename = "{date}_{language}"
+
+body = '''
+// ${FILENAME}
+// Date: ${DATE}  Time: ${TIME}
+${MESSAGE_COMMENT}
+
+#include <iostream>
+
+int main() {
+    return 0;
+}
+'''

@@ -1,4 +1,4 @@
-"""Read and write config.toml at the project root."""
+"""Read and write config.toml, whether stub runs from source or as a tool."""
 
 from __future__ import annotations
 
@@ -9,14 +9,31 @@ from pathlib import Path
 
 from .models import Paths, StubError
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_CONFIG_PATH = PROJECT_ROOT / "config.toml"
+
+def user_config_path() -> Path:
+    """Config for an installed tool: ~/.config/stub/config.toml."""
+    return Path.home() / ".config" / "stub" / "config.toml"
+
+
+def source_config_path() -> Path | None:
+    """Config for a real source checkout, or None when installed as a tool."""
+    root = Path(__file__).resolve().parents[2]
+    if not (root / "pyproject.toml").is_file():
+        return None
+    return root / "config.toml"
 
 
 def config_path() -> Path:
-    """The config file, overridable with STUB_CONFIG."""
+    """The active config file, overridable with STUB_CONFIG."""
     override = os.environ.get("STUB_CONFIG")
-    return Path(override).expanduser() if override else DEFAULT_CONFIG_PATH
+    if override:
+        return Path(override).expanduser()
+    if user_config_path().exists():
+        return user_config_path()
+    source = source_config_path()
+    if source is not None and source.is_file():
+        return source
+    return user_config_path()
 
 
 def load_config(path: Path | None = None) -> Paths:

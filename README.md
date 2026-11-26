@@ -57,7 +57,7 @@ source /home/ishannepal/Projects/stub/.venv/bin/activate
 stub --help
 ```
 
-Paths live in `config.toml` and the TOML recipes live in `.templates/`.
+For an installed tool, paths live in `~/.config/stub/config.toml` and templates in `~/.config/stub/templates/`. When running from the source checkout, the project's `config.toml` and `.templates/` are used instead. Override either with `STUB_CONFIG` and `STUB_TEMPLATES_DIR`.
 
 ## Commands
 
@@ -75,7 +75,7 @@ Every level has `--help` (`stub generate --help`, `stub config --help`, etc.).
 
 | Flag | Meaning |
 | --- | --- |
-| `<language>` | Template to use, e.g. `cpp`. Loads `.templates/<language>.toml`. |
+| `<language>` | Template to use, e.g. `cpp`. Loads `<language>.toml` from the active template directory. |
 | `-l` | Write the generated pair into the configured learnings folder instead of the current directory. Enables Markdown output. |
 | `-s` | Also symlink the generated `.md` into the configured vault folder. Requires `-l`. |
 | `-n NAME` | Filename to use **when `-l` is not passed**. Required in that case. |
@@ -96,7 +96,7 @@ Existing files are never overwritten.
 
 ### `stub config`
 
-Stores paths in `config.toml` at the project root. Each flag updates only its own key.
+Stores paths in `~/.config/stub/config.toml` when installed as a tool, or the project's `config.toml` when running from source. Each flag updates only its own key.
 
 ```
 stub config --vault /home/ishannepal/Documents/Obsidian/Learnings
@@ -105,11 +105,11 @@ stub config --learnings /home/ishannepal/Learnings
 
 ### `stub template`
 
-Creates a new TOML template in `.templates/`, e.g. `stub template rust --ext rs`. *(Planned alongside the main command.)*
+Creates a new TOML template in the active template directory, e.g. `stub template rust --ext rs`. For an installed tool that is `~/.config/stub/templates/`; for a source checkout it is `.templates/`.
 
 ## Configuration
 
-`config.toml`:
+The active config is `~/.config/stub/config.toml` for an installed tool, or `config.toml` at the project root when running from source. Set `STUB_CONFIG` to use a different file.
 
 ```toml
 [paths]
@@ -117,13 +117,13 @@ learnings = "/home/ishannepal/Learnings"
 vault = "/home/ishannepal/Documents/Obsidian/Learnings"
 ```
 
-`learnings` is where real files live. `vault` is the folder **inside** your Obsidian vault where `.md` symlinks are placed.
+Set the vault after installing with `stub config --vault /path/to/ObsidianVault/Learnings`. Without it, `-s` reports an error. `learnings` is where real files live; `vault` is the folder **inside** your Obsidian vault where `.md` symlinks are placed.
 
 ## Templates
 
-Templates are TOML files in `.templates/`. Each language is one file, plus `markdown.toml` for the note.
+Bundled defaults ship in `src/stub/data/templates/`. On first use they are copied into the active template directory — `~/.config/stub/templates/` for an installed tool, or the project's `.templates/` when running from source. Existing templates are never overwritten, so your edits survive reinstalls. Set `STUB_TEMPLATES_DIR` to use another directory.
 
-`.templates/cpp.toml`:
+Example `.templates/cpp.toml` (same format in every location):
 
 ```toml
 name = "cpp"
@@ -213,10 +213,14 @@ stub/
 │   ├── templates.py
 │   ├── models.py
 │   ├── render.py
-│   └── writer.py
+│   ├── writer.py
+│   └── data/templates/        # bundled defaults, copied on first use
+│       ├── cpp.toml
+│       └── markdown.toml
 └── tests/
     ├── test_config.py
     ├── test_templates.py
+    ├── test_models.py
     ├── test_render.py
     ├── test_writer.py
     └── test_cli.py
