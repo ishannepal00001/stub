@@ -1,0 +1,4 @@
+# Real files land in `learnings`; set the vault with `stub config --vault PATH`.
+[paths]
+learnings = "/home/ishannepal/Learnings"
+vault = ""

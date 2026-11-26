@@ -1,0 +1,13 @@
+name = "markdown"
+extension = "md"
+filename = "{date}_{language}"
+
+body = '''
+# ${TITLE}
+
+- Date: ${DATE}
+- Time: ${TIME}
+- Language: ${LANGUAGE}
+
+${MESSAGE_MD}
+'''
