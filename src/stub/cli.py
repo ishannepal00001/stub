@@ -98,26 +98,21 @@ def cmd_generate_template(args: argparse.Namespace) -> GenerationResult:
 
     code_path = destination / filename
     note_path = paths.learnings / note_filename if note_filename else None
-    link_path = paths.vault / note_filename if args.symlink and note_filename else None
-
-    for path in (code_path, note_path):
-        if path is not None and (path.exists() or path.is_symlink()):
-            raise StubError(f"refusing to overwrite {path}")
-    if link_path is not None and (link_path.exists() or link_path.is_symlink()):
-        raise StubError(f"refusing to overwrite {link_path}")
-
-    files = [writer.write_file(code_path, render(spec, context))]
-    symlinks: list[Path] = []
+    outputs: dict[Path, str] = {code_path: render(spec, context)}
     if note_spec is not None and note_path is not None:
-        files.append(writer.write_file(note_path, render(note_spec, context)))
-        if link_path is not None:
-            symlinks.append(writer.link_note(link_path, note_path))
+        outputs[note_path] = render(note_spec, context)
 
-    for path in files:
+    result = writer.write_generation(
+        paths=paths,
+        files=outputs,
+        note_path=note_path,
+        symlink=args.symlink,
+    )
+    for path in result.files:
         print(f"created {path}")
-    for path in symlinks:
+    for path in result.symlinks:
         print(f"linked {path} -> {path.resolve()}")
-    return GenerationResult(files=tuple(files), symlinks=tuple(symlinks))
+    return result
 
 
 def cmd_config(args: argparse.Namespace) -> None:

@@ -2,7 +2,7 @@
 
 A tiny personal-learning CLI. Give it a language and it writes a dated code stub and a matching Obsidian-ready Markdown note.
 
-> **Status:** this repository currently contains documentation only. The command-line tool described below is the specification being built next.
+> **Status:** implemented. Run `uv sync` and then `uv run stub --help` to get started.
 
 ## What it does
 
